@@ -3,6 +3,8 @@ from gym import error, spaces, utils
 from gym.utils import seeding
 import numpy as np
 
+from IPython.core.debugger import set_trace
+    
 class GameNimEnv(gym.Env):
     metadata = {'render.modes':['human'] }
     
@@ -27,13 +29,21 @@ class GameNimEnv(gym.Env):
         reward = 0
         done = False
         
+
+        assert isinstance(action, list), 'Wrong type.' + \
+            "Type is: {}. Should be <class 'list'>".format(type(action))
+        
+        assert len(action) == 2, 'Wrong length.' + \
+            'Length is:{}. Should by 2'.format(len(action))
+            
+        
         heapnumber = action[0]
         beansnumber = action[1]
         
         heapsize = self.state[heapnumber]
         
-        assert heapsize>=beansnumber, \
-            "Heap {} is not big enough. You tried to take {}, but there are only {} beans in this heap".format(heapnumber, beansnumber, heapsize)
+        assert heapsize>=beansnumber, 'Heap is not big enough' + \
+            "Heap number is: {}. You tried to take {}, but there are only {} beans in this heap".format(heapnumber, beansnumber, heapsize)
 
         
         self.state[heapnumber] += - beansnumber
