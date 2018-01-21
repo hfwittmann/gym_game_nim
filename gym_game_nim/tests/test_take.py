@@ -20,8 +20,7 @@ class TestSanity(TestCase):
         G = GameNimEnv()
         
         # the default MaxHeapSize is 100
-        self.assertTrue(G.MaxHeapSize, 100)
-    
+        self.assertTrue(G.maxHeapSize, 100)
 
         # prototype for assertion error test
         # https://stackoverflow.com/questions/129507/how-do-you-test-that-a-python-function-throws-an-exception
@@ -30,13 +29,11 @@ class TestSanity(TestCase):
             # cause assertionError
             assert False, 'My assertion error message'
         
-        
-        self.assertTrue('My assertion error' in str(context0.exception))
+        # https://stackoverflow.com/questions/284043/outputting-data-from-unit-test-in-python
+        self.assertTrue('My assertion error' in str(context0.exception), 'Message if test goes wrong')
         # end : prototype
 
-
-        
-        
+        # produce assertion errors
         G.reset()    
         # use first heap
         firstHeap = G.state[0]
@@ -64,10 +61,20 @@ class TestSanity(TestCase):
         # now perform a correct action: take the first heap        
         state, reward, done, info = G.step([0, firstHeap])
         
-        self.assertTrue( all(state == [0, 57, 45])) # first heap has vanished
+        self.assertTrue( all(state == [0, 58, 46])) # first heap has vanished
         self.assertEqual(reward, 0) # reward is 0, as there are still other heaps left
         self.assertEqual(done, False) # game ist not finished, as there are still other heaps left
         
         
+        # test winning position
+        G.setHeapsStartingPositions(heaps=[1,0,0])
+        
+        action = [0, 1] # take one bean from 0-heap (meaning the first heap, due to 0-indexing)
+        
+        state, reward, done, _ = G.step(action)
+        self.assertTrue ( np.all(np.array(state) == 0) , 'Position should be final position (=[0,0,0]), but is {}'.format(state))
+        self.assertEqual(reward, 1, 'Reward should be one (=instant win)')
         
         
+        
+ # for simple debugging do : self = TestSanity()
